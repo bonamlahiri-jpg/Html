@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Employees</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: #f4faf7;
+            color: #243b35;
+            font-family: Arial, sans-serif;
+        }
+
+        body.dark {
+            background: #0b111a;
+            color: #e8eef7;
+        }
+
+        .search-container {
+            width: min(760px, calc(100% - 32px));
+            margin: 48px auto;
+            padding: 35px;
+            border: 1px solid #dcebe4;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        body.dark .search-container {
+            background: #151f2e;
+            border-color: #293b54;
+        }
+
+        h2 {
+            color: #3f8065;
+        }
+
+        .dark h2 {
+            color: #5eead4;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 13px;
+            border: 1px solid #b9d9ca;
+            border-radius: 5px;
+        }
+
+        .dark .search-form input {
+            background: #0f1825;
+            border-color: #344963;
+            color: #fff;
+        }
+
+        .search-form button {
+            padding: 13px 22px;
+            border: 0;
+            border-radius: 5px;
+            background: #69ad8b;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .results {
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid #dcebe4;
+        }
+
+        .employee-item {
+            margin: 10px 0;
+            padding: 16px;
+            border: 1px solid #dcebe4;
+            border-radius: 7px;
+            background: #f8fcfa;
+        }
+
+        .dark .employee-item {
+            background: #0f1825;
+            border-color: #344963;
+        }
+
+        .employee-item strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 520px) {
+            .search-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body class="{{ theme }}">
+    {% include 'navbar.html' %}
+
+    <main class="search-container">
+        <h2>Search Employees</h2>
+
+        <form
+            class="search-form"
+            method="GET"
+            action="{{ url_for('search') }}"
+        >
+            <input
+                name="query"
+                placeholder="Search by name, email, phone or department"
+                value="{{ query }}"
+                required
+            >
+
+            <button type="submit">
+                Search
+            </button>
+        </form>
+
+        {% if query %}
+            <div class="results">
+                <h3>Results for: {{ query }}</h3>
+
+                {% if employees %}
+                    {% for employee in employees %}
+                        <div class="employee-item">
+                            <strong>
+                                {{ employee['name'] }}
+                            </strong>
+
+                            <div>
+                                Email: {{ employee['email'] }}
+                            </div>
+
+                            <div>
+                                Department: {{ employee['department'] }}
+                            </div>
+
+                            <div>
+                                Phone: {{ employee['phone'] }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No employees found.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </main>
+</body>
+</html>

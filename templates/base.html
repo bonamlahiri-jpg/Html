@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Employee Management{% endblock %}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f4faf7; color: #243b35; font-family: Arial, sans-serif; }
+        main { width: min(1100px, calc(100% - 32px)); margin: 40px auto; }
+        .page-header { display: flex; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+        .eyebrow { color: #3f8065; font-size: 12px; font-weight: bold; letter-spacing: .08em; }
+        h2 { margin: 8px 0; }
+        p { color: #6b7f78; line-height: 1.6; }
+        .form-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; }
+        .form-card, .info-card { background: #fff; border: 1px solid #dcebe4; border-radius: 12px; padding: 28px; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 24px; }
+        .field { display: flex; flex-direction: column; gap: 7px; }
+        .field.full { grid-column: 1 / -1; }
+        label { font-size: 13px; font-weight: bold; }
+        input, textarea { width: 100%; border: 1px solid #b9d9ca; border-radius: 6px; padding: 12px; font: inherit; }
+        textarea { min-height: 90px; resize: vertical; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+        .button { display: inline-block; border: 0; border-radius: 7px; padding: 11px 17px; background: #69ad8b; color: #fff; text-decoration: none; cursor: pointer; font-weight: bold; }
+        .button.secondary { background: #edf7f2; color: #3f8065; }
+        .flash { padding: 12px 16px; margin-bottom: 18px; border-radius: 7px; background: #fff3cd; color: #664d03; }
+        @media (max-width: 760px) { .form-layout, .form-grid { grid-template-columns: 1fr; } .field.full { grid-column: auto; } }
+
+        body.add-employee-page { background: #0f172a; color: #111827; }
+        body.add-employee-page .navbar { background: #172238; border-bottom-color: #263552; }
+        body.add-employee-page .logo, body.add-employee-page .nav-links a { color: #f8fafc; }
+        body.add-employee-page .nav-links a:hover { background: #263552; color: #c084fc; }
+        body.add-employee-page main { width: 100%; margin: 0; padding: 50px 20px 60px; }
+        body.add-employee-page .page-header, body.add-employee-page .info-card { display: none; }
+        body.add-employee-page .form-layout { display: block; }
+        body.add-employee-page .form-card { width: min(620px, 100%); margin: 0 auto; padding: 32px 38px 34px; border: 0; border-radius: 12px; box-shadow: 0 18px 45px rgba(0,0,0,.3); }
+        body.add-employee-page .form-card h3 { margin: 0; text-align: center; color: #9333ea; font-size: 34px; line-height: 1.15; letter-spacing: .02em; }
+        body.add-employee-page .form-card > p { margin: 8px 0 26px; text-align: center; color: #94a3b8; font-size: 15px; }
+        body.add-employee-page .form-grid { gap: 20px 16px; margin-top: 0; }
+        body.add-employee-page .field { gap: 7px; }
+        body.add-employee-page .field:nth-child(5) { display: none; }
+        body.add-employee-page label { color: #1f2937; font-size: 13px; }
+        body.add-employee-page input, body.add-employee-page textarea { padding: 12px 13px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fafafa; font-size: 14px; }
+        body.add-employee-page textarea { min-height: 100px; }
+        body.add-employee-page .form-actions { margin-top: 26px; gap: 10px; }
+        body.add-employee-page .button { flex: 1; padding: 12px 16px; border-radius: 6px; background: #a855f7; font-size: 14px; text-align: center; }
+        body.add-employee-page .button.secondary { background: #f5f3f7; color: #6b7280; }
+        body.add-employee-page .button.secondary { font-size: 0; }
+        body.add-employee-page .button.secondary::after { content: 'Reset'; font-size: 14px; }
+        body.add-employee-page .mode-buttons a { color: #e2e8f0; border-color: #475569; }
+
+        body.dark.add-employee-page { background: #101a16; color: #e7f4ee; }
+        body.dark.add-employee-page .navbar { background: #101914; border-bottom-color: #2d4037; }
+        body.dark.add-employee-page .logo { color: #8dd6b6; }
+        body.dark.add-employee-page .nav-links a { color: #b6c9c1; }
+        body.dark.add-employee-page .nav-links a:hover { background: #22332b; color: #d2e4dc; }
+        body.dark.add-employee-page .form-card { background: #18251f; border-color: #2d4037; box-shadow: 0 18px 45px rgba(0,0,0,.28); }
+        body.dark.add-employee-page .form-card h3 { color: #8dd6b6; }
+        body.dark.add-employee-page .form-card > p { color: #a9bdb4; }
+        body.dark.add-employee-page label { color: #e7f4ee; }
+        body.dark.add-employee-page input, body.dark.add-employee-page textarea { background: #101a16; border-color: #3b5046; color: #e7f4ee; }
+        body.dark.add-employee-page input::placeholder, body.dark.add-employee-page textarea::placeholder { color: #789087; }
+        body.dark.add-employee-page .button { background: #76c7a5; color: #102019; }
+        body.dark.add-employee-page .button.secondary { background: #294237; color: #d2e4dc; }
+        body.dark.add-employee-page .mode-buttons a { color: #b6c9c1; border-color: #3b5046; }
+
+        body.light.add-employee-page { background: #f4faf7; color: #243b35; }
+        body.light.add-employee-page .navbar { background: #fff; border-bottom-color: #dcebe4; }
+        body.light.add-employee-page .logo { color: #3f8065; }
+        body.light.add-employee-page .nav-links a { color: #526a60; }
+        body.light.add-employee-page .nav-links a:hover { background: #edf7f2; color: #3f8065; }
+        body.light.add-employee-page .form-card { border: 1px solid #dcebe4; box-shadow: 0 12px 35px rgba(70,100,85,.09); }
+        body.light.add-employee-page .form-card h3 { color: #3f8065; }
+        body.light.add-employee-page .form-card > p { color: #6b7f78; }
+        body.light.add-employee-page input, body.light.add-employee-page textarea { background: #fff; border-color: #b9d9ca; }
+        body.light.add-employee-page .button { background: #69ad8b; }
+        body.light.add-employee-page .button.secondary { background: #edf7f2; color: #3f8065; }
+        body.light.add-employee-page .mode-buttons a { color: #60766e; border-color: #d5e6de; }
+    </style>
+</head>
+<body class="{{ theme }}{% if request.endpoint == 'add_employee' %} add-employee-page{% endif %}">
+    {% include 'navbar.html' %}
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

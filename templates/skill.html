@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}{{ employee['name'] }} | Profile{% endblock %}
+{% block content %}
+<style>
+.profile-grid { display:grid; grid-template-columns: 1fr 1.25fr; gap:24px; }
+.profile-card, .skills-card, .timeline-card { background:#fff; border:1px solid #dcebe4; border-radius:12px; padding:28px; box-shadow:0 10px 28px rgba(70,100,85,.07); }
+body.dark .profile-card, body.dark .skills-card, body.dark .timeline-card { background:#18251f; border-color:#2d4037; }
+.profile-card h2, .skills-card h2, .timeline-card h2 { margin:0 0 8px; }
+.profile-role { color:#4f9d7a; font-weight:bold; }
+.profile-meta { margin:24px 0 0; display:grid; gap:14px; }
+.profile-meta div { padding-bottom:12px; border-bottom:1px solid #e8efeb; }
+body.dark .profile-meta div { border-color:#343d37; }
+.profile-meta strong { display:block; font-size:12px; color:#6b7f78; margin-bottom:4px; }
+.skills-card { min-height:260px; }
+.skill { margin:18px 0; }
+.skill-head { display:flex; justify-content:space-between; margin-bottom:7px; font-size:14px; font-weight:bold; }
+.skill-bar { height:9px; overflow:hidden; border-radius:10px; background:#e5f1eb; }
+.skill-fill { height:100%; border-radius:inherit; background:#69ad8b; }
+.skill-form { display:flex; gap:10px; margin-top:24px; }
+.skill-form input { flex:1; min-width:0; padding:11px; border:1px solid #b9d9ca; border-radius:6px; font:inherit; }
+.ai-card { margin-top:20px; padding:18px; border:1px solid #b9d9ca; border-radius:10px; background:#f4faf7; }
+body.dark .ai-card { background:#101a16; border-color:#3b5046; }
+.ai-card h3 { margin:0 0 6px; color:#3f8065; font-size:16px; }
+.ai-card p { margin:0 0 12px; font-size:13px; }
+.ai-suggestions { display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; list-style:none; }
+.ai-suggestions li { padding:7px 10px; border-radius:6px; background:#dff3e8; color:#276345; font-size:13px; font-weight:bold; }
+.ai-form { margin-top:14px; }
+.timeline-card { grid-column:1 / -1; }
+.timeline { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:20px; }
+.timeline-step { padding:18px; border-left:3px solid #69ad8b; background:#f4faf7; }
+body.dark .timeline-step { background:#101a16; }
+.timeline-step strong { display:block; margin-bottom:7px; }
+.timeline-step span { color:#6b7f78; font-size:13px; }
+@media (max-width:760px) { .profile-grid, .timeline { grid-template-columns:1fr; } .timeline-card { grid-column:auto; } }
+</style>
+<div class="page-header"><div><span class="eyebrow">EMPLOYEE / PROFILE</span><h2>{{ employee['name'] }}</h2><p>Employee profile, skills, and growth history.</p></div><a class="button secondary" href="{{ url_for('edit_employee', id=employee['id']) }}">Edit profile</a></div>
+<div class="profile-grid">
+    <section class="profile-card"><h2>{{ employee['name'] }}</h2><div class="profile-role">{{ employee['designation'] or employee['department'] }}</div><div class="profile-meta"><div><strong>EMAIL</strong>{{ employee['email'] }}</div><div><strong>PHONE</strong>{{ employee['phone'] }}</div><div><strong>DEPARTMENT</strong>{{ employee['department'] }}</div><div><strong>JOINED</strong>{{ employee['joining_date'] }}</div></div></section>
+    <section class="skills-card">
+        <h2>Skills profile</h2>
+        <p>Track the capabilities this employee brings to the team.</p>
+        {% if skills %}
+            {% for skill in skills %}
+                <div class="skill">
+                    <div class="skill-head">
+                        <span>{{ skill['skill'] }}</span>
+                        <span>{{ skill['level'] }}%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-fill" data-level="{{ skill['level'] }}"></div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No skills added yet.</p>
+        {% endif %}
+        <form class="skill-form" method="post" action="{{ url_for('update_employee_skills', id=employee['id']) }}">
+            <input name="skills" placeholder="Python, Flask, SQL">
+            <button class="button" type="submit">Save skills</button>
+        </form>
+        <div class="ai-card">
+            <h3>AI skills assistant</h3>
+            <p>Get skill suggestions based on this employee's department and current profile.</p>
+            {% if ai_suggestions %}
+                <ul class="ai-suggestions">
+                    {% for suggestion in ai_suggestions %}
+                        <li>{{ suggestion }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <form class="ai-form" method="post" action="{{ url_for('analyze_skills', id=employee['id']) }}">
+                <button class="button" type="submit">Analyze with AI</button>
+            </form>
+        </div>
+    </section>
+    <section class="timeline-card"><h2>Growth timeline</h2><div class="timeline"><div class="timeline-step"><strong>{{ employee['joining_date'] }}</strong><span>Joined the {{ employee['department'] }} team</span></div><div class="timeline-step"><strong>Skills profile</strong><span>{{ skills|length }} skills currently tracked</span></div><div class="timeline-step"><strong>Next step</strong><span>Keep skills updated as the role grows</span></div></div></section>
+</div>
+<script>
+    document.querySelectorAll('.skill-fill').forEach(function (bar) {
+        bar.style.width = bar.dataset.level + '%';
+    });
+</script>
+{% endblock %}

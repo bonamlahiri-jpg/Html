@@ -1,0 +1,493 @@
+
+<style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            min-height: 100vh;
+            background: #f4faf7;
+            color: #243b35;
+        }
+
+        /* =================================================
+           NAVBAR
+        ================================================= */
+
+        .navbar {
+            width: 100%;
+            min-height: 72px;
+            padding: 0 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            background: #ffffff;
+
+            border-bottom: 1px solid #dcebe4;
+
+            box-shadow: 0 3px 15px rgba(70, 100, 85, 0.08);
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: 700;
+            color: #3f8065;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        /* =================================================
+           NAV LINKS
+        ================================================= */
+
+        .nav-links {
+            list-style: none;
+
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+        }
+
+        .nav-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 40px;
+
+            padding: 8px 14px;
+
+            color: #526a60;
+
+            text-decoration: none;
+
+            font-size: 15px;
+            font-weight: 500;
+
+            border-radius: 8px;
+
+            transition: 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            background: #edf7f2;
+            color: #3f8065;
+        }
+
+        /* =================================================
+           LOGIN
+        ================================================= */
+
+        .login-btn {
+            border: 1px solid #b9d9ca;
+        }
+
+        .login-btn:hover {
+            background: #edf7f2 !important;
+        }
+
+        /* =================================================
+           REGISTER
+        ================================================= */
+
+        .register-btn {
+            min-height: 42px !important;
+
+            padding: 9px 19px !important;
+
+            color: white !important;
+
+            background: #69ad8b;
+
+            border-radius: 9px !important;
+        }
+
+        .register-btn:hover {
+            background: #559777 !important;
+            color: white !important;
+        }
+
+        /* =================================================
+           THEME BUTTONS
+        ================================================= */
+
+        .mode-buttons {
+            display: flex;
+            gap: 6px;
+            margin-left: 8px;
+        }
+
+        .mode-buttons a {
+            min-height: 36px;
+
+            padding: 6px 10px;
+
+            border: 1px solid #d5e6de;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            color: #60766e;
+
+            text-decoration: none;
+        }
+
+        .mode-buttons a:hover {
+            background: #edf7f2;
+            color: #3f8065;
+        }
+
+        .mode-buttons a.active {
+            background: #e3f3eb;
+            color: #3f8065;
+            font-weight: 600;
+        }
+
+        /* =================================================
+           MAIN CONTENT
+        ================================================= */
+
+        .content {
+            min-height: calc(100vh - 72px);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 50px 20px;
+        }
+
+        .welcome-card {
+            width: min(850px, 100%);
+
+            padding: 55px 50px;
+
+            text-align: center;
+
+            background: #ffffff;
+
+            border: 1px solid #dcebe4;
+
+            border-radius: 18px;
+
+            box-shadow: 0 12px 35px rgba(70, 100, 85, 0.09);
+        }
+
+        .welcome-card h1 {
+            margin-bottom: 18px;
+
+            font-size: 32px;
+            line-height: 1.35;
+
+            font-weight: 600;
+
+            color: #243b35;
+        }
+
+        .highlight {
+            display: block;
+
+            margin-top: 5px;
+
+            color: #4f9d7a;
+
+            font-weight: 700;
+        }
+
+        .welcome-card p {
+            max-width: 680px;
+
+            margin: 0 auto 30px;
+
+            color: #6b7f78;
+
+            font-size: 16px;
+
+            line-height: 1.8;
+        }
+
+        /* =================================================
+           MAIN BUTTON
+        ================================================= */
+
+        .start-btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-width: 210px;
+            min-height: 56px;
+
+            padding: 15px 32px;
+
+            color: white;
+
+            background: #69ad8b;
+
+            border-radius: 10px;
+
+            text-decoration: none;
+
+            font-size: 16px;
+            font-weight: 600;
+
+            box-shadow: 0 7px 18px rgba(79, 157, 122, 0.20);
+
+            transition: 0.2s ease;
+        }
+
+        .start-btn:hover {
+            background: #559777;
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 10px 22px rgba(79, 157, 122, 0.25);
+        }
+
+        /* =================================================
+           DARK MODE
+        ================================================= */
+
+        body.dark {
+            background: #101a16;
+            color: #e7f4ee;
+        }
+
+        body.dark .navbar {
+            background: #101914;
+            border-bottom-color: #2d4037;
+        }
+
+        body.dark .logo {
+            color: #8dd6b6;
+        }
+
+        body.dark .nav-links a {
+            color: #b6c9c1;
+        }
+
+        body.dark .nav-links a:hover {
+            background: #22332b;
+            color: #d2e4dc;
+        }
+
+        body.dark .login-btn {
+            border-color: #3b5046;
+        }
+
+        body.dark .mode-buttons a {
+            border-color: #3b5046;
+            color: #b6c9c1;
+        }
+
+        body.dark .mode-buttons a:hover {
+            background: #22332b;
+        }
+
+        body.dark .mode-buttons a.active {
+            background: #294237;
+            color: #d2e4dc;
+        }
+
+        body.dark .welcome-card {
+            background: #18251f;
+            border-color: #2d4037;
+        }
+
+        body.dark .welcome-card h1 {
+            color: #e7f4ee;
+        }
+
+        body.dark .welcome-card p {
+            color: #a9bdb4;
+        }
+
+        body.dark .highlight {
+            color: #8dd6b6;
+        }
+
+        body.dark .start-btn {
+            background: #76c7a5;
+            color: #102019;
+        }
+
+        body.dark .start-btn:hover {
+            background: #62b592;
+        }
+
+        /* =================================================
+           RESPONSIVE
+        ================================================= */
+
+        @media (max-width: 900px) {
+
+            .navbar {
+                flex-direction: column;
+
+                gap: 15px;
+
+                padding: 18px 20px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .content {
+                padding: 35px 15px;
+            }
+
+            .welcome-card {
+                padding: 45px 25px;
+            }
+
+            .welcome-card h1 {
+                font-size: 26px;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .nav-links {
+                gap: 4px;
+            }
+
+            .nav-links a {
+                padding: 7px 9px;
+                font-size: 13px;
+            }
+
+            .mode-buttons {
+                margin-left: 0;
+            }
+
+            .welcome-card {
+                padding: 35px 20px;
+            }
+
+            .welcome-card h1 {
+                font-size: 23px;
+            }
+
+            .welcome-card p {
+                font-size: 15px;
+            }
+
+            .start-btn {
+                min-width: 180px;
+                min-height: 52px;
+                font-size: 13px;
+            }
+        }
+
+    </style>
+
+<!-- =================================================
+    NAVBAR
+================================================= -->
+
+    <nav class="navbar">
+
+        <a href="{{ url_for('home') }}"
+           class="logo">
+            Employee Management System
+        </a>
+
+
+        <ul class="nav-links">
+
+            <li>
+                <a href="{{ url_for('home') }}">
+                    Home
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('employees') }}">
+                    Employees
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('add_employee') }}">
+                    Add Employee
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('search') }}">
+                    Search
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('attendance') }}">
+                    Attendance
+                </a>
+            </li>
+
+
+            {% if session.get("username") %}
+
+                <li>
+                    <a href="{{ url_for('logout') }}"
+                       class="login-btn">
+                        Logout
+                    </a>
+                </li>
+
+            {% else %}
+
+                <li>
+                    <a href="{{ url_for('login') }}"
+                       class="login-btn">
+                        Login
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('register') }}"
+                       class="register-btn">
+                        Register
+                    </a>
+                </li>
+
+            {% endif %}
+
+        </ul>
+
+
+        <!-- =================================================
+             THEME
+        ================================================= -->
+
+        <div class="mode-buttons">
+
+            <a href="{{ url_for('set_theme', theme='light') }}"
+               class="{% if theme == 'light' %}active{% endif %}">
+                ☀ Light
+            </a>
+
+            <a href="{{ url_for('set_theme', theme='dark') }}"
+               class="{% if theme == 'dark' %}active{% endif %}">
+                🌙 Dark
+            </a>
+
+        </div>
+
+    </nav>
+
+

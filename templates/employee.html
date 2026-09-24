@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employees</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f4faf7;
+            color: #243b35;
+            font-family: Arial, sans-serif;
+        }
+
+        body.dark {
+            background: #0f1714;
+            color: #e7f4ee;
+        }
+
+        .container {
+            width: min(1100px, calc(100% - 32px));
+            margin: 40px auto;
+        }
+
+        .table-container {
+            overflow: auto;
+            background: #fff;
+            border: 1px solid #dcebe4;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(70, 100, 85, .08);
+        }
+
+        body.dark .table-container {
+            background: #191f1b;
+            border-color: #2d4037;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #247a5a;
+        }
+
+        body.dark h1 {
+            color: #8dd6b6;
+        }
+
+        table {
+            width: 100%;
+            min-width: 950px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e8efeb;
+            text-align: left;
+            font-size: 18px;
+        }
+
+        body.dark th,
+        body.dark td {
+            border-color: #343d37;
+        }
+
+        th {
+            background: #3f8065;
+            color: #fff;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+
+        body.dark th {
+            background: #246b58;
+            color: #effff7;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f0faf5;
+        }
+
+        tbody tr:hover {
+            background: #dff3e8;
+        }
+
+        body.dark tbody tr:nth-child(even) {
+            background: #202f28;
+        }
+
+        body.dark tbody tr:hover {
+            background: #294237;
+        }
+
+        tbody td:first-child {
+            color: #247a5a;
+            font-weight: bold;
+        }
+
+        body.dark tbody td:first-child {
+            color: #8dd6b6;
+        }
+
+        .skill-list {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: #dff3e8;
+            color: #276345;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        body.dark .skill-list {
+            background: #315443;
+            color: #c9f2dc;
+        }
+
+        .actions a {
+            margin-right: 10px;
+            color: #247a5a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .actions a:hover {
+            color: #d97706;
+        }
+
+        .delete {
+            border: 0;
+            background: none;
+            color: #dc2626 !important;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .empty {
+            padding: 45px;
+            color: #6b7f78;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .directory-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .directory-search {
+            width: min(360px, 100%);
+            padding: 12px 14px;
+            border: 1px solid #b9d9ca;
+            border-radius: 8px;
+            background: #fff;
+            color: #243b35;
+            font: inherit;
+        }
+
+        body.dark .directory-search {
+            border-color: #3b5046;
+            background: #18251f;
+            color: #e7f4ee;
+        }
+
+        @media (max-width: 640px) {
+            .directory-toolbar {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .directory-search {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="{{ theme }}">
+    {% include 'navbar.html' %}
+
+    <main class="container">
+        <div class="directory-toolbar">
+            <h1>Employees</h1>
+            <input
+                id="employeeSearch"
+                class="directory-search"
+                type="search"
+                placeholder="Search employees..."
+                aria-label="Search employees"
+            >
+        </div>
+
+        <div class="table-container">
+            {% if employees %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Department</th>
+                            <th>Skills</th>
+                            <th>Salary</th>
+                            <th>Joining Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for employee in employees %}
+                            <tr class="employee-row">
+                                <td>{{ employee['name'] }}</td>
+                                <td>{{ employee['email'] }}</td>
+                                <td>{{ employee['phone'] }}</td>
+                                <td>{{ employee['department'] }}</td>
+                                <td>
+                                    <span class="skill-list">
+                                        {{ employee['skills'] or 'No skills added' }}
+                                    </span>
+                                </td>
+                                <td>${{ employee['salary'] }}</td>
+                                <td>{{ employee['joining_date'] }}</td>
+                                <td class="actions">
+                                    <a href="{{ url_for('edit_employee', id=employee['id']) }}">
+                                        Edit
+                                    </a>
+
+                                    <form
+                                        action="{{ url_for('delete_employee', id=employee['id']) }}"
+                                        method="post"
+                                        style="display: inline"
+                                        onsubmit="return confirm('Delete this employee?')"
+                                    >
+                                        <button class="delete" type="submit">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty">
+                    No employees found.
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <script>
+        const employeeSearch = document.getElementById('employeeSearch');
+        const employeeRows = document.querySelectorAll('.employee-row');
+
+        employeeSearch.addEventListener('input', () => {
+            const query = employeeSearch.value.trim().toLowerCase();
+
+            employeeRows.forEach((row) => {
+                row.hidden = !row.textContent.toLowerCase().includes(query);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            color-scheme: dark;
+        }
+
+        body {
+            background: #121212;
+            color: #f5f5f5;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -.02em;
+        }
+
+        .dashboard-shell {
+            background: #121212;
+        }
+
+        .glass-panel {
+            border: 1px solid #2a2a2a;
+            background: #1a1a1a;
+            box-shadow: 0 18px 60px rgba(0, 0, 0, .2);
+        }
+
+        .metric-card {
+            min-height: 152px;
+            transition: transform .2s ease, border-color .2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            border-color: #b2f2d2;
+            box-shadow: 0 14px 34px rgba(178, 242, 210, .09);
+        }
+
+        .metric-icon {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border-radius: 12px;
+            background: rgba(167, 243, 208, .12);
+            color: #b2f2d2;
+        }
+
+        .table-row:hover {
+            background: rgba(141, 214, 182, .06);
+        }
+
+        .status-present {
+            color: #8dd6b6;
+            background: rgba(141, 214, 182, .12);
+        }
+
+        .status-absent {
+            color: #fca5a5;
+            background: rgba(252, 165, 165, .1);
+        }
+
+        .chart-wrap {
+            min-height: 300px;
+        }
+
+        .dashboard-eyebrow,
+        .dashboard-date,
+        .dashboard-copy,
+        .metric-label,
+        .metric-subtitle,
+        .chart-subtitle,
+        .recent-subtitle,
+        .live-pill,
+        .dashboard-table,
+        .dashboard-table-head,
+        .status-pill {
+            font-size: 16px !important;
+        }
+
+        .dashboard-title {
+            font-size: 42px !important;
+            line-height: 1.08 !important;
+            font-weight: 700 !important;
+        }
+
+        .metric-card {
+            min-height: 190px;
+            padding: 32px !important;
+        }
+
+        .metric-number {
+            margin-top: 24px !important;
+            font-size: 40px !important;
+            line-height: 1 !important;
+            font-weight: 700 !important;
+        }
+
+        .dashboard-panel {
+            padding: 32px !important;
+        }
+
+        .panel-title {
+            font-size: 24px !important;
+            line-height: 1.2 !important;
+            font-weight: 700 !important;
+        }
+
+        .recent-name {
+            font-size: 18px !important;
+            font-weight: 700 !important;
+        }
+
+        .recent-email {
+            font-size: 16px !important;
+        }
+
+        .dashboard-table th,
+        .dashboard-table td {
+            font-size: 16px !important;
+        }
+
+        @media (max-width: 640px) {
+            .dashboard-title {
+                font-size: 34px !important;
+            }
+
+            .metric-number {
+                font-size: 36px !important;
+            }
+
+            .metric-card,
+            .dashboard-panel {
+                padding: 24px !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .chart-wrap {
+                min-height: 240px;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-shell min-h-screen">
+    <header class="border-b border-emerald-100/10 bg-[#0d1d18]/90">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+            <a href="{{ url_for('home') }}" class="flex items-center gap-3">
+                <span class="grid h-10 w-10 place-items-center rounded-xl bg-emerald-300 text-[#092019]">
+                    <i data-lucide="users-round" class="h-5 w-5"></i>
+                </span>
+                <span>
+                    <span class="block text-base font-semibold tracking-[.12em] text-emerald-200">
+                        PEOPLE OPS
+                    </span>
+                    <span class="block text-base text-emerald-100/50">
+                        Employee Management
+                    </span>
+                </span>
+            </a>
+
+            <div class="flex items-center gap-2 text-sm">
+                <a
+                    href="{{ url_for('add_employee') }}"
+                    class="inline-flex items-center gap-2 rounded-lg bg-emerald-300 px-3 py-2 font-semibold text-[#092019] transition hover:bg-emerald-200"
+                >
+                    <i data-lucide="user-plus" class="h-4 w-4"></i>
+                    <span class="hidden sm:inline">Add employee</span>
+                </a>
+                <a
+                    href="{{ url_for('employees') }}"
+                    class="inline-flex items-center gap-2 rounded-lg border border-emerald-100/15 px-3 py-2 font-semibold text-emerald-100/80 transition hover:border-emerald-200/40 hover:text-emerald-100"
+                >
+                    <i data-lucide="contact-round" class="h-4 w-4"></i>
+                    <span class="hidden sm:inline">Directory</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <section class="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <div>
+                <p class="dashboard-eyebrow mb-3 font-bold uppercase tracking-[.14em] text-emerald-300">
+                    Operations overview
+                </p>
+                <h1 class="dashboard-title tracking-tight text-white">
+                    Employee dashboard
+                </h1>
+                <p class="dashboard-copy mt-4 max-w-xl leading-7 text-emerald-100/55">
+                    A clear view of your people, attendance, and department mix.
+                </p>
+            </div>
+            <p id="dashboardDate" class="dashboard-date text-emerald-100/55"></p>
+        </section>
+
+        <section class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Employee metrics">
+            <article class="metric-card glass-panel rounded-2xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="metric-label text-emerald-100/55">Total employees</p>
+                        <p id="totalEmployees" class="metric-number text-white">0</p>
+                    </div>
+                    <span class="metric-icon"><i data-lucide="users" class="h-5 w-5"></i></span>
+                </div>
+                <p class="metric-subtitle mt-5 text-emerald-300">Active directory records</p>
+            </article>
+
+            <article class="metric-card glass-panel rounded-2xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="metric-label text-emerald-100/55">Present today</p>
+                        <p id="presentToday" class="metric-number text-white">0</p>
+                    </div>
+                    <span class="metric-icon"><i data-lucide="calendar-check-2" class="h-5 w-5"></i></span>
+                </div>
+                <p id="attendanceRate" class="metric-subtitle mt-5 text-emerald-300">0% attendance rate</p>
+            </article>
+
+            <article class="metric-card glass-panel rounded-2xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="metric-label text-emerald-100/55">Total departments</p>
+                        <p id="totalDepartments" class="metric-number text-white">0</p>
+                    </div>
+                    <span class="metric-icon"><i data-lucide="building-2" class="h-5 w-5"></i></span>
+                </div>
+                <p class="metric-subtitle mt-5 text-emerald-300">Across the organization</p>
+            </article>
+
+            <article class="metric-card glass-panel rounded-2xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="metric-label text-emerald-100/55">Average salary</p>
+                        <p id="averageSalary" class="metric-number text-white">$0</p>
+                    </div>
+                    <span class="metric-icon"><i data-lucide="wallet-cards" class="h-5 w-5"></i></span>
+                </div>
+                <p class="metric-subtitle mt-5 text-emerald-300">Annual compensation average</p>
+            </article>
+        </section>
+
+        <section class="grid gap-6 xl:grid-cols-[1.1fr_.9fr]">
+            <article class="dashboard-panel glass-panel rounded-2xl">
+                <div class="mb-5 flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="panel-title text-white">Department mix</h2>
+                        <p class="chart-subtitle mt-2 text-emerald-100/50">Employees by department</p>
+                    </div>
+                    <span class="live-pill rounded-full border border-emerald-100/10 px-3 py-1 text-emerald-100/55">
+                        Live data
+                    </span>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="departmentChart" aria-label="Department employee bar chart"></canvas>
+                </div>
+            </article>
+
+            <article class="dashboard-panel glass-panel rounded-2xl">
+                <div class="mb-5 flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="panel-title text-white">Recent employees</h2>
+                        <p class="recent-subtitle mt-2 text-emerald-100/50">Latest five directory additions</p>
+                    </div>
+                    <i data-lucide="clock-3" class="h-5 w-5 text-emerald-300"></i>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="dashboard-table w-full min-w-[520px] text-left">
+                        <thead class="dashboard-table-head border-b border-emerald-100/10 uppercase tracking-wider text-emerald-100/40">
+                            <tr>
+                                <th class="pb-3 pr-4 font-medium">Employee</th>
+                                <th class="pb-3 pr-4 font-medium">Department</th>
+                                <th class="pb-3 pr-4 font-medium">Joined</th>
+                                <th class="pb-3 font-medium">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentEmployees"></tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        const seedEmployees = [
+            {
+                id: 1,
+                name: 'Maya Chen',
+                email: 'maya@company.com',
+                department: 'Product',
+                salary: 92000,
+                joining_date: '2025-02-14',
+                status: 'Present'
+            },
+            {
+                id: 2,
+                name: 'Arjun Rao',
+                email: 'arjun@company.com',
+                department: 'Engineering',
+                salary: 108000,
+                joining_date: '2025-04-03',
+                status: 'Present'
+            },
+            {
+                id: 3,
+                name: 'Sofia Martinez',
+                email: 'sofia@company.com',
+                department: 'Design',
+                salary: 86000,
+                joining_date: '2025-07-22',
+                status: 'Absent'
+            },
+            {
+                id: 4,
+                name: 'Daniel Kim',
+                email: 'daniel@company.com',
+                department: 'Engineering',
+                salary: 116000,
+                joining_date: '2025-09-10',
+                status: 'Present'
+            },
+            {
+                id: 5,
+                name: 'Ava Williams',
+                email: 'ava@company.com',
+                department: 'People',
+                salary: 78000,
+                joining_date: '2026-01-08',
+                status: 'Present'
+            },
+            {
+                id: 6,
+                name: 'Lahiri Bonam',
+                email: 'bonamlahiri@gmail.com',
+                department: 'HR',
+                salary: 100000,
+                joining_date: '2025-05-11',
+                status: 'Present'
+            }
+        ];
+
+        let departmentChart;
+
+        function getEmployees() {
+            const storedEmployees = localStorage.getItem('employeeDashboardData');
+
+            if (!storedEmployees) {
+                localStorage.setItem(
+                    'employeeDashboardData',
+                    JSON.stringify(seedEmployees)
+                );
+                return seedEmployees;
+            }
+
+            try {
+                const parsedEmployees = JSON.parse(storedEmployees);
+                const hasRequestedDemoData = Array.isArray(parsedEmployees)
+                    && parsedEmployees.length >= 6
+                    && parsedEmployees.some((employee) => employee.name === 'Lahiri Bonam');
+
+                if (!hasRequestedDemoData) {
+                    localStorage.setItem(
+                        'employeeDashboardData',
+                        JSON.stringify(seedEmployees)
+                    );
+                    return seedEmployees;
+                }
+
+                return parsedEmployees;
+            } catch (error) {
+                return seedEmployees;
+            }
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+            }).format(value || 0);
+        }
+
+        function formatDate(value) {
+            if (!value) return 'Not set';
+            return new Intl.DateTimeFormat('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            }).format(new Date(`${value}T00:00:00`));
+        }
+
+        function renderMetrics(employees) {
+            const departments = new Set(
+                employees.map((employee) => employee.department).filter(Boolean)
+            );
+            const present = employees.filter(
+                (employee) => (employee.status || 'Present').toLowerCase() === 'present'
+            ).length;
+            const averageSalary = employees.length
+                ? employees.reduce((total, employee) => total + Number(employee.salary || 0), 0) / employees.length
+                : 0;
+
+            document.getElementById('totalEmployees').textContent = employees.length;
+            document.getElementById('presentToday').textContent = present;
+            document.getElementById('totalDepartments').textContent = departments.size;
+            document.getElementById('averageSalary').textContent = formatCurrency(averageSalary);
+            document.getElementById('attendanceRate').textContent = employees.length
+                ? `${Math.round((present / employees.length) * 100)}% attendance rate`
+                : '0% attendance rate';
+        }
+
+        function renderChart(employees) {
+            const counts = employees.reduce((result, employee) => {
+                const department = employee.department || 'Unassigned';
+                result[department] = (result[department] || 0) + 1;
+                return result;
+            }, {});
+            const context = document.getElementById('departmentChart');
+
+            if (departmentChart) {
+                departmentChart.destroy();
+            }
+
+            departmentChart = new Chart(context, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        label: 'Employees',
+                        data: Object.values(counts),
+                        backgroundColor: '#76c7a5',
+                        borderColor: '#b7f3d5',
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        maxBarThickness: 48
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#a9bdb4' },
+                            grid: { display: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#a9bdb4', precision: 0 },
+                            grid: { color: 'rgba(169, 189, 180, .12)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRecentEmployees(employees) {
+            const recentEmployees = [...employees]
+                .sort((first, second) => {
+                    const firstDate = new Date(first.joining_date || 0).getTime();
+                    const secondDate = new Date(second.joining_date || 0).getTime();
+                    return secondDate - firstDate || Number(second.id || 0) - Number(first.id || 0);
+                })
+                .slice(0, 5);
+            const tableBody = document.getElementById('recentEmployees');
+
+            tableBody.innerHTML = recentEmployees.length
+                ? recentEmployees.map((employee) => {
+                    const present = (employee.status || 'Present').toLowerCase() === 'present';
+                    return `
+                        <tr class="table-row border-b border-emerald-100/10 transition">
+                            <td class="py-4 pr-4">
+                                <div class="recent-name text-white">${escapeHtml(employee.name)}</div>
+                                <div class="recent-email mt-1 text-emerald-100/40">${escapeHtml(employee.email || '')}</div>
+                            </td>
+                            <td class="py-4 pr-4 text-emerald-100/65">${escapeHtml(employee.department || 'Unassigned')}</td>
+                            <td class="py-4 pr-4 whitespace-nowrap text-emerald-100/65">${formatDate(employee.joining_date)}</td>
+                            <td class="py-4">
+                                <span class="status-pill ${present ? 'status-present' : 'status-absent'} rounded-full px-2.5 py-1 font-semibold">
+                                    ${present ? 'Present' : 'Absent'}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('')
+                : '<tr><td colspan="4" class="py-8 text-center text-emerald-100/45">No employees yet</td></tr>';
+        }
+
+        function renderDashboard() {
+            const employees = getEmployees();
+            renderMetrics(employees);
+            renderChart(employees);
+            renderRecentEmployees(employees);
+            document.getElementById('dashboardDate').textContent = 'Friday, September 25, 2026';
+            lucide.createIcons();
+        }
+
+        renderDashboard();
+        window.addEventListener('storage', renderDashboard);
+    </script>
+</body>
+</html>

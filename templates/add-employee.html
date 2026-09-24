@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Add employee
+{% endblock %}
+
+{% block page_title %}
+    Add employee
+{% endblock %}
+
+{% block content %}
+    <style>
+        .validation-error {
+            min-height: 18px;
+            margin-top: 2px;
+            color: #dc2626;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .field input.invalid,
+        .field select.invalid,
+        .field textarea.invalid {
+            border-color: #dc2626;
+            outline: 2px solid rgba(220, 38, 38, .12);
+        }
+
+        body.dark.add-employee-page .validation-error {
+            color: #fca5a5;
+        }
+
+        .button:disabled {
+            cursor: not-allowed;
+            opacity: .45;
+        }
+    </style>
+
+    <div class="page-header">
+        <div>
+            <span class="eyebrow">DIRECTORY / NEW RECORD</span>
+            <h2>Add employee</h2>
+            <p>Complete the required details to create an employee profile.</p>
+        </div>
+    </div>
+
+    <div class="form-layout">
+        <section class="form-card">
+            <h3>Employee details</h3>
+            <p>All fields marked with validation messages must be corrected before saving.</p>
+
+            <form
+                id="employeeForm"
+                action="{{ url_for('add_employee') }}"
+                method="post"
+                novalidate
+            >
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="name">Full name</label>
+                        <input
+                            id="name"
+                            name="name"
+                            placeholder="e.g. Maya Chen"
+                            autocomplete="name"
+                        >
+                        <div class="validation-error" id="nameError"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Work email</label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="maya@company.com"
+                            autocomplete="email"
+                        >
+                        <div class="validation-error" id="emailError"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="phone">Phone number</label>
+                        <input
+                            id="phone"
+                            name="phone"
+                            inputmode="numeric"
+                            maxlength="10"
+                            placeholder="9876543210"
+                            autocomplete="tel"
+                        >
+                        <div class="validation-error" id="phoneError"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="department">Department</label>
+                        <input
+                            id="department"
+                            name="department"
+                            placeholder="e.g. Engineering"
+                        >
+                        <div class="validation-error" id="departmentError"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="designation">Designation</label>
+                        <input
+                            id="designation"
+                            name="designation"
+                            placeholder="e.g. Software Engineer"
+                        >
+                        <div class="validation-error" id="designationError"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="salary">Annual salary</label>
+                        <input
+                            id="salary"
+                            name="salary"
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="85000"
+                        >
+                        <div class="validation-error" id="salaryError"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="joining_date">Joining date</label>
+                        <input
+                            id="joining_date"
+                            name="joining_date"
+                            type="date"
+                        >
+                        <div class="validation-error" id="joining_dateError"></div>
+                    </div>
+
+                    <div class="field full">
+                        <label for="skills">Skills</label>
+                        <input
+                            id="skills"
+                            name="skills"
+                            placeholder="Python, SQL, Docker"
+                        >
+                    </div>
+
+                    <div class="field full">
+                        <label for="address">Address</label>
+                        <textarea
+                            id="address"
+                            name="address"
+                            placeholder="Add a residential or mailing address"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a
+                        class="button secondary"
+                        href="{{ url_for('employees') }}"
+                    >
+                        Cancel
+                    </a>
+                    <button
+                        id="submitButton"
+                        class="button"
+                        type="submit"
+                        disabled
+                    >
+                        Save employee
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/validation.js') }}"></script>
+{% endblock %}

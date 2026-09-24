@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login</title>
+
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			min-height: 100vh;
+			margin: 0;
+			display: grid;
+			place-items: center;
+			background: #f4faf7;
+			color: #243b35;
+			font-family: Arial, sans-serif;
+		}
+
+		body.dark {
+			background: #0b111a;
+			color: #e8eef7;
+		}
+
+		.theme-buttons {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			display: flex;
+			gap: 8px;
+		}
+
+		.theme-buttons a {
+			padding: 8px 12px;
+			border: 1px solid #b9d9ca;
+			border-radius: 5px;
+			color: #3f8065;
+			text-decoration: none;
+			font-size: 13px;
+		}
+
+		.theme-buttons a.active {
+			background: #69ad8b;
+			color: #fff;
+		}
+
+		body.dark .theme-buttons a {
+			border-color: #344963;
+			color: #c5d2e2;
+		}
+
+		body.dark .theme-buttons a.active {
+			background: #14b8a6;
+			color: #fff;
+		}
+
+		.card {
+			width: min(400px, calc(100% - 40px));
+			padding: 32px;
+			border: 1px solid #dcebe4;
+			border-radius: 10px;
+			background: #fff;
+		}
+
+		body.dark .card {
+			background: #151f2e;
+			border-color: #293b54;
+		}
+
+		h1 {
+			margin-top: 0;
+			color: #3f8065;
+		}
+
+		.dark h1 {
+			color: #5eead4;
+		}
+
+		label {
+			display: block;
+			margin: 16px 0 6px;
+			font-weight: bold;
+		}
+
+		input {
+			width: 100%;
+			padding: 12px;
+			border: 1px solid #b9d9ca;
+			border-radius: 5px;
+			background: #fff;
+			color: #243b35;
+		}
+
+		.dark input {
+			background: #0f1825;
+			border-color: #344963;
+			color: #fff;
+		}
+
+		button {
+			width: 100%;
+			margin-top: 24px;
+			padding: 12px;
+			border: 0;
+			border-radius: 5px;
+			background: #69ad8b;
+			color: #fff;
+			font-weight: bold;
+		}
+
+		a {
+			color: #3f8065;
+		}
+
+		.dark a {
+			color: #5eead4;
+		}
+
+		.link {
+			margin-top: 20px;
+			text-align: center;
+		}
+	</style>
+</head>
+
+<body class="{{ theme }}">
+	<div class="theme-buttons">
+		<a
+			href="{{ url_for('set_theme', theme='light') }}"
+			class="{% if theme == 'light' %}active{% endif %}"
+		>
+			Light
+		</a>
+
+		<a
+			href="{{ url_for('set_theme', theme='dark') }}"
+			class="{% if theme == 'dark' %}active{% endif %}"
+		>
+			Dark
+		</a>
+	</div>
+
+	<main class="card">
+		<h1>Login</h1>
+
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% for category, message in messages %}
+				<p>{{ message }}</p>
+			{% endfor %}
+		{% endwith %}
+
+		<form method="POST" action="{{ url_for('login') }}">
+			<label for="username">Username</label>
+			<input
+				id="username"
+				name="username"
+				required
+			>
+
+			<label for="password">Password</label>
+			<input
+				id="password"
+				name="password"
+				type="password"
+				required
+			>
+
+			<button type="submit">
+				Login
+			</button>
+		</form>
+
+		<p class="link">
+			Don't have an account?
+			<a href="{{ url_for('register') }}">Register</a>
+		</p>
+	</main>
+</body>
+</html>
