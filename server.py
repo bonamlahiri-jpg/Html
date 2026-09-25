@@ -511,6 +511,18 @@ def logout():
     return redirect(url_for("home"))
 
 
+@app.route("/E0")
+def e0_roll():
+    return """
+    <div style="text-align:center; margin-top:100px; font-family: Arial;">
+        <h1 style="font-size:60px; color: #2c3e50;">Roll No: E0</h1>
+        <h2 style="font-size:30px;">Lahiri Bonam</h2>
+        <h3>Employee Management System</h3>
+        <p>Deploy Link: /E0 working successfully</p>
+    </div>
+    """
+
+
 create_tables()
 
 if __name__ == "__main__":
